@@ -177,6 +177,7 @@ class cyclegan(object):
 
                 if np.mod(counter, args.save_freq) == 2:
                     self.save(args.checkpoint_dir, counter)
+            print("fine epochs", epoch)
 
     def save(self, checkpoint_dir, step):
         model_name = "cyclegan.model"
