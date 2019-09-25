@@ -93,7 +93,7 @@ def generator_unet(image, options, reuse=False, name="generator"):
 
 def generator_resnet(image, options, reuse=False, name="generator"):
 
-    with tf.variable_scope(name):
+    with tf.compat.v1.variable_scope(name):
         # image is 256 x 256 x input_c_dim
         if reuse:
             tf.get_variable_scope().reuse_variables()

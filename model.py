@@ -37,11 +37,11 @@ class cyclegan(object):
                                       args.phase == 'train'))
 
         self._build_model()
-        self.saver = tf.train.Saver()
+        self.saver = tf.compat.v1.train.Saver()
         self.pool = ImagePool(args.max_size)
 
     def _build_model(self):
-        self.real_data = tf.placeholder(tf.float32,
+        self.real_data = tf.compat.v1.placeholder(tf.float32,
                                         [None, self.image_size, self.image_size,
                                          self.input_c_dim + self.output_c_dim],
                                         name='real_A_and_B_images')
@@ -86,17 +86,17 @@ class cyclegan(object):
         self.da_loss = (self.da_loss_real + self.da_loss_fake) / 2
         self.d_loss = self.da_loss + self.db_loss
 
-        self.g_loss_a2b_sum = tf.summary.scalar("g_loss_a2b", self.g_loss_a2b)
-        self.g_loss_b2a_sum = tf.summary.scalar("g_loss_b2a", self.g_loss_b2a)
-        self.g_loss_sum = tf.summary.scalar("g_loss", self.g_loss)
-        self.g_sum = tf.summary.merge([self.g_loss_a2b_sum, self.g_loss_b2a_sum, self.g_loss_sum])
-        self.db_loss_sum = tf.summary.scalar("db_loss", self.db_loss)
-        self.da_loss_sum = tf.summary.scalar("da_loss", self.da_loss)
-        self.d_loss_sum = tf.summary.scalar("d_loss", self.d_loss)
-        self.db_loss_real_sum = tf.summary.scalar("db_loss_real", self.db_loss_real)
-        self.db_loss_fake_sum = tf.summary.scalar("db_loss_fake", self.db_loss_fake)
-        self.da_loss_real_sum = tf.summary.scalar("da_loss_real", self.da_loss_real)
-        self.da_loss_fake_sum = tf.summary.scalar("da_loss_fake", self.da_loss_fake)
+        self.g_loss_a2b_sum = tf.compat.v1.summary.scalar("g_loss_a2b", self.g_loss_a2b)
+        self.g_loss_b2a_sum = tf.compat.v1.summary.scalar("g_loss_b2a", self.g_loss_b2a)
+        self.g_loss_sum = tf.compat.v1.summary.scalar("g_loss", self.g_loss)
+        self.g_sum = tf.compat.v1.summary.merge([self.g_loss_a2b_sum, self.g_loss_b2a_sum, self.g_loss_sum])
+        self.db_loss_sum = tf.compat.v1.summary.scalar("db_loss", self.db_loss)
+        self.da_loss_sum = tf.compat.v1.summary.scalar("da_loss", self.da_loss)
+        self.d_loss_sum = tf.compat.v1.summary.scalar("d_loss", self.d_loss)
+        self.db_loss_real_sum = tf.compat.v1.summary.scalar("db_loss_real", self.db_loss_real)
+        self.db_loss_fake_sum = tf.compat.v1.summary.scalar("db_loss_fake", self.db_loss_fake)
+        self.da_loss_real_sum = tf.compat.v1.summary.scalar("da_loss_real", self.da_loss_real)
+        self.da_loss_fake_sum = tf.compat.v1.summary.scalar("da_loss_fake", self.da_loss_fake)
         self.d_sum = tf.summary.merge(
             [self.da_loss_sum, self.da_loss_real_sum, self.da_loss_fake_sum,
              self.db_loss_sum, self.db_loss_real_sum, self.db_loss_fake_sum,
@@ -120,14 +120,14 @@ class cyclegan(object):
     def train(self, args):
         """Train cyclegan"""
         self.lr = tf.placeholder(tf.float32, None, name='learning_rate')
-        self.d_optim = tf.train.AdamOptimizer(self.lr, beta1=args.beta1) \
+        self.d_optim = tf.compat.v1.train.AdamOptimizer(self.lr, beta1=args.beta1) \
             .minimize(self.d_loss, var_list=self.d_vars)
-        self.g_optim = tf.train.AdamOptimizer(self.lr, beta1=args.beta1) \
+        self.g_optim = tf.compat.v1.train.AdamOptimizer(self.lr, beta1=args.beta1) \
             .minimize(self.g_loss, var_list=self.g_vars)
 
         init_op = tf.global_variables_initializer()
         self.sess.run(init_op)
-        self.writer = tf.summary.FileWriter("./logs", self.sess.graph)
+        self.writer = tf.compat.v1.summary.FileWriter("./logs", self.sess.graph)
 
         counter = 1
         start_time = time.time()
