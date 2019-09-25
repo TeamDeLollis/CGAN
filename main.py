@@ -52,4 +52,5 @@ def main(_):
             else model.test(args)
 
 if __name__ == '__main__':
+    print("ma funziona qualcosa=")
     tf.compat.v1.app.run
