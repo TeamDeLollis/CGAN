@@ -116,8 +116,10 @@ class cyclegan(object):
         self.d_vars = [var for var in t_vars if 'discriminator' in var.name]
         self.g_vars = [var for var in t_vars if 'generator' in var.name]
         for var in t_vars: print(var.name)
+        print("sto inizializzando il modello")
 
     def train(self, args):
+        print("sto trainando")
         """Train cyclegan"""
         self.lr = tf.placeholder(tf.float32, None, name='learning_rate')
         self.d_optim = tf.compat.v1.train.AdamOptimizer(self.lr, beta1=args.beta1) \
