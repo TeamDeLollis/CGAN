@@ -143,6 +143,7 @@ class cyclegan(object):
             dataB = glob('./datasets/{}/*.*'.format(self.dataset_dir + '/TrainB'))
             np.random.shuffle(dataA)
             np.random.shuffle(dataB)
+            print(dataA)
             batch_idxs = min(min(len(dataA), len(dataB)), args.train_size) // self.batch_size
             lr = args.lr if epoch < args.epoch_step else args.lr*(args.epoch-epoch)/(args.epoch-args.epoch_step)
 
