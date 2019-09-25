@@ -62,7 +62,7 @@ def load_train_data(image_path, load_size=286, fine_size=256, is_testing=False):
         if np.random.random() > 0.5:
             img_A = np.fliplr(img_A)
             img_B = np.fliplr(img_B)
-    else:
+    #else:
         #img_A = scipy.misc.imresize(img_A, [fine_size, fine_size])
         #img_B = scipy.misc.imresize(img_B, [fine_size, fine_size])
 
