@@ -85,7 +85,7 @@ def imread(path, is_grayscale = False):
     if (is_grayscale):
         return _imread(path, flatten=True).astype(np.float)
     else:
-        return _imread(path, mode='RGB').astype(np.float)
+        return _imread(path, True, "RGB").astype(np.float)
 
 def merge_images(images, size):
     return inverse_transform(images)
