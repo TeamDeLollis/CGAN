@@ -63,8 +63,8 @@ def load_train_data(image_path, load_size=286, fine_size=256, is_testing=False):
             img_A = np.fliplr(img_A)
             img_B = np.fliplr(img_B)
     else:
-        img_A = scipy.misc.imresize(img_A, [fine_size, fine_size])
-        img_B = scipy.misc.imresize(img_B, [fine_size, fine_size])
+        #img_A = scipy.misc.imresize(img_A, [fine_size, fine_size])
+        #img_B = scipy.misc.imresize(img_B, [fine_size, fine_size])
 
     img_A = img_A/255
     img_B = img_B/255
