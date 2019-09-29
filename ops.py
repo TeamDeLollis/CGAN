@@ -3,9 +3,8 @@ import tensorflow as tf
 
 def Conv2D(input, filters, kernel_size, strides, padding):
     # return tf.nn.conv2d(input, filter=filters, strides=strides, padding=padding, use_cudnn_on_gpu=True)
-    # check that there is no relu !!
-    return tf.layers.conv2d(inputs=input, filters=filters, kernel_size=kernel_size, strides=strides, padding=padding,
-                            use_cudnn_on_gpu=True)
+    # check that there is no relu !! use_cudnn_on_gpu=True
+    return tf.layers.conv2d(inputs=input, filters=filters, kernel_size=kernel_size, strides=strides, padding=padding)
 
 
 def Conv2DTranspose(input, filters, kernel_size, strides, padding, use_bias):
