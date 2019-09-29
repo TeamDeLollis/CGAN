@@ -6,7 +6,7 @@ np.random.seed(25)
 
 class cyclegan(object):
 
-    def __init__(self, sess, args):
+    def __init__(self, sess):
 
         self.sess = sess
         self.batch_size = 1
