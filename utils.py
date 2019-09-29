@@ -1,5 +1,5 @@
 from glob import glob
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import numpy as np
 
 def load_images(data_dir):

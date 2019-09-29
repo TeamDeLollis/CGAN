@@ -24,11 +24,24 @@ def Add(a, b):
 def LeakyReLU(x, alpha):
     return tf.compat.v1.nn.leaky_relu(x, alpha=alpha)
 
+"""
+
+----------  NOT WORKING -------------
 
 def InstanceNormalization(x):
     # x = InstanceNormalization(axis=1)(x)
-    tf.contrib.layers.instance_norm(x)
-
+    #tf.contrib.layers.instance_norm(x)
+    with tf.variable_scope("instance_norm", reuse=tf.AUTO_REUSE):
+        depth = x.get_shape()[3]
+        #scale = tf.get_variable("scale", [depth], initializer=tf.random_normal_initializer(1.0, 0.02, dtype=tf.float32))
+        scale = tf.get_variable("scale", [depth], initializer=tf.random_normal_initializer(1.0, 0.02, dtype=tf.float32))
+        offset = tf.get_variable("offset", [depth], initializer=tf.constant_initializer(0.0))
+        mean, variance = tf.nn.moments(x, axes=[1,2], keep_dims=True)
+        epsilon = 1e-5
+        inv = tf.rsqrt(variance + epsilon)
+        normalized = (x-mean)*inv
+        return scale*normalized + offset
+"""
 
 def ZeroPadding2D(x, padding):
     # paddings = tf.constant([[1, 1, ], [2, 2]]) #CHECK DIMENSION BEFORE ENTERING, SHOULD BE (NB=1,3,npix,npix)
@@ -38,5 +51,5 @@ def ZeroPadding2D(x, padding):
 
     # --> dovrebbe essere
     if padding == [1, 1]:
-        padd = tf.constant([[1, 1], [1, 1], [0, 0]])
+        padd = tf.constant([[0, 0],[1, 1], [1, 1], [0, 0]])
         return tf.pad(x, padd, "CONSTANT")

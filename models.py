@@ -1,5 +1,7 @@
 import tensorflow as tf
 from ops import *
+from keras_contrib.layers import InstanceNormalization
+
 
 class Generator():
 
@@ -24,17 +26,18 @@ class Generator():
 
         # First Convolution block
         x = Conv2D(input, filters=32, kernel_size=7, strides=1, padding="same")
-        x = InstanceNormalization(x)
+        # x = InstanceNormalization(x)
+        x = InstanceNormalization(axis=1)(x)
         x = tf.compat.v1.nn.relu(x)
 
         # 2nd Convolution block
         x = Conv2D(x, filters=64, kernel_size=3, strides=2, padding="same")
-        x = InstanceNormalization(x)
+        x = InstanceNormalization(axis=1)(x)
         x = tf.compat.v1.nn.relu(x)
 
         # 3rd Convolution block
         x = Conv2D(x, filters=128, kernel_size=3, strides=2, padding="same")
-        x = InstanceNormalization(x)
+        x = InstanceNormalization(axis=1)(x)
         x = tf.compat.v1.nn.relu(x)
 
         # Residual blocks
@@ -45,12 +48,12 @@ class Generator():
 
         # 1st Upsampling block
         x = Conv2DTranspose(x, filters=64, kernel_size=3, strides=2, padding='same', use_bias=False)
-        x = InstanceNormalization(x)
+        x = InstanceNormalization(axis=1)(x)
         x = tf.compat.v1.nn.relu(x)
 
         # 2nd Upsampling block
         x = Conv2DTranspose(x, filters=32, kernel_size=3, strides=2, padding='same', use_bias=False)
-        x = InstanceNormalization(x)
+        x = InstanceNormalization(axis=1)(x)
         x = tf.compat.v1.nn.relu(x)
 
         # Last Convolution layer
@@ -85,7 +88,7 @@ class Discriminator():
     """
 
     def __init__(self, sess):
-        self.input_shape = (128, 128, 3)
+        self.input_shape = (1, 128, 128, 3)
         self.hidden_layers = 3
         self.sess = sess
 
@@ -97,19 +100,20 @@ class Discriminator():
     def build_discriminator(self):
 
         input = tf.compat.v1.placeholder(tf.float32, shape=self.input_shape)
-        print(input)
         x = ZeroPadding2D(input, padding=[1, 1])
         # 1st Convolutional block
-        print(x)
         x = Conv2D(x, filters=64, kernel_size=4, strides=2, padding="VALID")
         x = LeakyReLU(x, alpha=0.2)
 
         x = ZeroPadding2D(x, padding=[1, 1])
 
+        print(x)
         # 3 Hidden Convolution blocks
-        for i in range(1, hidden_layers + 1):
+        for i in range(1, self.hidden_layers + 1):
             x = Conv2D(x, filters=2 ** i * 64, kernel_size=4, strides=2, padding="VALID")
-            x = InstanceNormalization(x)
+            print(x)
+            x = InstanceNormalization(axis=1)(x)
+            print(x)
             x = LeakyReLU(x, alpha=0.2)
 
             x = ZeroPadding2D(x, padding=[1, 1])
