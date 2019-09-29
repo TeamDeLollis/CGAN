@@ -1,3 +1,5 @@
+import tensorflow as tf
+
 def Conv2D(input, filters, kernel_size, strides, padding):
     return tf.nn.conv2d(input, filter=filters, strides=strides, padding=padding, use_cudnn_on_gpu=True)
 
@@ -24,14 +26,13 @@ def InstanceNormalization(x):
     tf.contrib.layers.instance_norm(x)
 
 
-
-
-def ZeroPadding2D(x):
-    #paddings = tf.constant([[1, 1, ], [2, 2]]) #CHECK DIMENSION BEFORE ENTERING, SHOULD BE (NB=1,3,npix,npix)
+def ZeroPadding2D(x, padding):
+    # paddings = tf.constant([[1, 1, ], [2, 2]]) #CHECK DIMENSION BEFORE ENTERING, SHOULD BE (NB=1,3,npix,npix)
     # 'constant_values' is 0.
     # rank of 't' is 2.
-   # tf.pad(t, paddings, "CONSTANT")
+    # tf.pad(t, paddings, "CONSTANT")
 
-    #--> dovrebbe essere
-    padd = tf.constant([[0,0],[1,1],[1,1],[0,0]])
-    return tf.pad(x, padd, "CONSTANT")
+    # --> dovrebbe essere
+    if padding == [1, 1]:
+        padd = tf.constant([[0, 0], [1, 1], [1, 1], [0, 0]])
+        return tf.pad(x, padd, "CONSTANT")

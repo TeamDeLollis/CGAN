@@ -98,13 +98,13 @@ class Discriminator():
 
         input = tf.compat.v1.placeholder(tf.float32, shape=self.input_shape)
 
-        x = ZeroPadding2D(padding=(1, 1))(input)
+        x = ZeroPadding2D(input, padding=(1, 1))
 
         # 1st Convolutional block
         x = Conv2D(x, filters=64, kernel_size=4, strides=2, padding="valid")
         x = LeakyReLU(x, alpha=0.2)
 
-        x = ZeroPadding2D(padding=(1, 1))(x)
+        x = ZeroPadding2D(x, padding=[1, 1])
 
         # 3 Hidden Convolution blocks
         for i in range(1, hidden_layers + 1):
@@ -112,7 +112,7 @@ class Discriminator():
             x = InstanceNormalization(x)
             x = LeakyReLU(x, alpha=0.2)
 
-            x = ZeroPadding2D(padding=(1, 1))(x)
+            x = ZeroPadding2D(x, padding=(1, 1))
 
         # Last Convolution layer
         pre_output = Conv2D(x, filters=1, kernel_size=4, strides=1, padding="valid")
