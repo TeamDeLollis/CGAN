@@ -1,8 +1,9 @@
 import tensorflow as tf
 
 def Conv2D(input, filters, kernel_size, strides, padding):
-    print(input)
-    return tf.nn.conv2d(input, filter=filters, strides=strides, padding=padding, use_cudnn_on_gpu=True)
+    #return tf.nn.conv2d(input, filter=filters, strides=strides, padding=padding, use_cudnn_on_gpu=True)
+    return tf.layers.conv2d(inputs=input, filter=filters, kernel_size=kernel_size, strides=strides, padding=padding,
+                            activation_fn=None, use_cudnn_on_gpu=True)
 
 
 def Conv2DTranspose(input, filters, kernel_size, strides, padding, use_bias):
