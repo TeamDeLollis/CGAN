@@ -97,7 +97,7 @@ class Discriminator():
     def build_discriminator(self):
 
         input = tf.compat.v1.placeholder(tf.float32, shape=self.input_shape)
-        print(x)
+        print(input)
         x = ZeroPadding2D(input, padding=[1, 1])
         # 1st Convolutional block
         print(x)
