@@ -1,5 +1,5 @@
 import tensorflow as tf
-
+from ops import *
 
 class Generator():
 
