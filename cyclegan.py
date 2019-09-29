@@ -14,7 +14,8 @@ class cyclegan(object):
         self.image_size = 128 #reduced in utils
 
         self.L1_lambda = 10
-        self.data_dir = "datasets/vangogh2photo/"
+        # self.data_dir = "datasets/vangogh2photo/" for the reduced dataset
+        self.data_dir = "/content/drive/My Drive/vangogh2photobig"
 
         self.discriminatorA = Discriminator(sess)
         self.discriminatorB = Discriminator(sess)
