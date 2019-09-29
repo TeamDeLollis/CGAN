@@ -4,7 +4,7 @@ from ops import *
 class Generator():
 
     def __init__(self, sess):
-        self.input_shape = (128, 128, 3)
+        self.input_shape = [None, 128, 128, 3]
         self.residual_blocks = 6
         self.sess = sess
 
@@ -97,6 +97,10 @@ class Discriminator():
     def build_discriminator(self):
 
         input = tf.compat.v1.placeholder(tf.float32, shape=self.input_shape)
+
+        [None, self.image_size, self.image_size,
+         self.input_c_dim + self.output_c_dim],
+        name = 'real_A_and_B_images')
 
         x = ZeroPadding2D(input, padding=(1, 1))
 
