@@ -1,6 +1,8 @@
 from glob import glob
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import numpy as np
+from scipy.misc import imread, imresize
+
 
 def load_images(data_dir):
     imagesA = glob(data_dir + '/TestA/*.*')
