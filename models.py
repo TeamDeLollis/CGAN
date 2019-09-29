@@ -4,7 +4,7 @@ from ops import *
 class Generator():
 
     def __init__(self, sess):
-        self.input_shape = [None, 128, 128, 3]
+        self.input_shape = (None, 128, 128, 3)
         self.residual_blocks = 6
         self.sess = sess
 
