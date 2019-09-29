@@ -98,10 +98,6 @@ class Discriminator():
 
         input = tf.compat.v1.placeholder(tf.float32, shape=self.input_shape)
 
-        [None, self.image_size, self.image_size,
-         self.input_c_dim + self.output_c_dim],
-        name = 'real_A_and_B_images')
-
         x = ZeroPadding2D(input, padding=(1, 1))
 
         # 1st Convolutional block
