@@ -33,12 +33,12 @@ class cyclegan(object):
 
     def build_model(self):
 
-        self.real_data = tf.placeholder(tf.float32,
-                                        [None, self.image_size, self.image_size, 3 + 3],
-                                        name='real_A_and_B_images')
-
-        self.real_A = self.real_data[:, :, :, :3]
-        self.real_B = self.real_data[:, :, :, 3:6]
+        self.real_A = tf.placeholder(tf.float32,
+                                        [None, self.image_size, self.image_size, 3],
+                                        name='real_A')
+        self.real_B = tf.placeholder(tf.float32,
+                                     [None, self.image_size, self.image_size, 3],
+                                     name='real_B')
 
         self.fake_B = self.generatorAToB.predict(self.real_A)
         self.fake_A = self.generatorBToA.predict(self.real_B)
@@ -108,7 +108,7 @@ class cyclegan(object):
         self.g_vars = [var for var in t_vars if 'generator' in var.name]
         for var in t_vars: print(var.name)
 
-    def train(self, args):
+    def train(self):
 
         """Train cyclegan"""
         self.d_optim = tf.train.AdamOptimizer(0.0002, beta1=0.5).minimize(self.d_loss, var_list=self.d_vars)
@@ -119,29 +119,31 @@ class cyclegan(object):
         self.writer = tf.summary.FileWriter("./logs", self.sess.graph)
 
         counter = 1
+        epochs = 500
         start_time = time.time()
 
-        for epoch in range(args.epoch):
-            dataA = glob(self.data_dir + '/TrainA/*.*')
-            dataB = glob(self.data_dir + '/trainB/*.*')
+        for epoch in range(epochs):
+            dataA, dataB = load_images(self.data_dir)
             np.random.shuffle(dataA)
             np.random.shuffle(dataB)
             batch_idxs = min(len(dataA), len(dataB)) // self.batch_size
 
             for idx in range(0, batch_idxs):
-                batch_files = list(zip(dataA[idx * self.batch_size:(idx + 1) * self.batch_size],
-                                       dataB[idx * self.batch_size:(idx + 1) * self.batch_size]))
 
-                batch_images = [load_train_data(batch_file, args.load_size, args.fine_size) for batch_file in batch_files]
+                batchA = dataA[idx * self.batch_size:(index + 1) * self.batch_size]
+                batchB = dataB[idx * self.batch_size:(index + 1) * self.batch_size]
                 batch_images = np.array(batch_images).astype(np.float32)
 
                 # Update G network and record fake outputs
                 fake_A, fake_B, _, summary_str = self.sess.run([self.fake_A, self.fake_B, self.g_optim, self.g_sum],
-                                                               feed_dict={self.real_data: batch_images})
+                                                               feed_dict={self.real_A: batchA,
+                                                                          self.real_B: batchB})
+
                 self.writer.add_summary(summary_str, counter)[fake_A, fake_B] = self.pool([fake_A, fake_B])
 
                 # Update D network
-                _, summary_str = self.sess.run([self.d_optim, self.d_sum],feed_dict={self.real_data: batch_images,
+                _, summary_str = self.sess.run([self.d_optim, self.d_sum],feed_dict={self.real_A: batchA,
+                                                                                     self.real_B: batchB,
                                                                                      self.fake_A_sample: fake_A,
                                                                                      self.fake_B_sample: fake_B})
                 self.writer.add_summary(summary_str, counter)
