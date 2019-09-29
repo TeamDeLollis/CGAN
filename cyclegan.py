@@ -131,9 +131,9 @@ class cyclegan(object):
 
             for idx in range(0, batch_idxs):
 
-                batchA = dataA[idx * self.batch_size:(index + 1) * self.batch_size]
-                batchB = dataB[idx * self.batch_size:(index + 1) * self.batch_size]
-                batch_images = np.array(batch_images).astype(np.float32)
+                batchA = dataA[idx * self.batch_size:(idx + 1) * self.batch_size]
+                batchB = dataB[idx * self.batch_size:(idx + 1) * self.batch_size]
+                #batch_images = np.array(batch_images).astype(np.float32)
 
                 # Update G network and record fake outputs
                 fake_A, fake_B, _, summary_str = self.sess.run([self.fake_A, self.fake_B, self.g_optim, self.g_sum],
