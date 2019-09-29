@@ -1,6 +1,7 @@
 import tensorflow as tf
 
 def Conv2D(input, filters, kernel_size, strides, padding):
+    print(input)
     return tf.nn.conv2d(input, filter=filters, strides=strides, padding=padding, use_cudnn_on_gpu=True)
 
 
