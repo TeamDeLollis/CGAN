@@ -139,7 +139,7 @@ class cyclegan(object):
                 fake_A, fake_B, _, summary_str = self.sess.run([self.fake_A, self.fake_B, self.g_optim, self.g_sum],
                                                                feed_dict={self.real_A: batchA,
                                                                           self.real_B: batchB})
-                print(fake_A)
+                #print(fake_A)
                 #self.writer.add_summary(summary_str, counter)[fake_A, fake_B] = self.pool([fake_A, fake_B])
                 #self.writer.add_summary(summary_str, counter)[fake_A, fake_B] = [fake_A, fake_B]
 
