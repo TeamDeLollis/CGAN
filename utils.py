@@ -5,26 +5,33 @@ from scipy.misc import imread, imresize
 
 
 def load_images(data_dir):
-    imagesA = glob(data_dir + '/TestA/*.*')
-    imagesB = glob(data_dir + '/TestB/*.*')
+    imagesA = glob(data_dir + '/TrainA/*.*')
+    imagesB = glob(data_dir + '/TrainB/*.*')
 
+    min_l = len(imagesB)
+    print(len(imagesA))
+    print(len(imagesB))
     allImagesA = []
     allImagesB = []
 
     for index, filename in enumerate(imagesA):
         imgA = imread(filename, mode='RGB')
-        imgB = imread(imagesB[index], mode='RGB')
+        if index < min_l - 1:
+            imgB = imread(imagesB[index], mode='RGB')
+            imgB = imresize(imgB, (128, 128))
 
         imgA = imresize(imgA, (128, 128))
-        imgB = imresize(imgB, (128, 128))
 
         if np.random.random() > 0.5:
             imgA = np.fliplr(imgA)
-            imgB = np.fliplr(imgB)
+            if index < min_l - 1:
+                imgB = np.fliplr(imgB)
 
         allImagesA.append(imgA)
-        allImagesB.append(imgB)
 
+        if index < min_l - 1:
+            allImagesB.append(imgB)
+    
     # Normalize images
     allImagesA = np.array(allImagesA) / 127.5 - 1.
     allImagesB = np.array(allImagesB) / 127.5 - 1.
