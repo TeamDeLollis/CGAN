@@ -2,7 +2,7 @@ import tensorflow as tf
 
 def Conv2D(input, filters, kernel_size, strides, padding):
     #return tf.nn.conv2d(input, filter=filters, strides=strides, padding=padding, use_cudnn_on_gpu=True)
-    return tf.layers.conv2d(inputs=input, filter=filters, kernel_size=kernel_size, strides=strides, padding=padding,
+    return tf.layers.conv2d(inputs=input, filters=filters, kernel_size=kernel_size, strides=strides, padding=padding,
                             activation_fn=None, use_cudnn_on_gpu=True)
 
 
