@@ -174,7 +174,7 @@ def main(_):
 
     with tf.Session(config=tfconfig) as sess:
         model = cyclegan(sess)
-        if args.phase == 'train':
+        if args.mode == 'train':
             model.train()
         else:
             model.test()

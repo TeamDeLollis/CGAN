@@ -3,6 +3,7 @@ import tensorflow as tf
 import time
 import numpy as np
 np.random.seed(25)
+from utils import *
 
 class cyclegan(object):
 
@@ -22,14 +23,15 @@ class cyclegan(object):
         self.generatorAToB = Generator(sess)
         self.generatorBToA = Generator(sess)
 
-        self.build_model()
-
         self.d_optim = None
         self.g_optim = None
-        self.d_loss= None
-        self.g_loss= None
+        self.d_loss = None
+        self.g_loss = None
         self.d_vars = None
         self.g_vars = None
+
+        self.build_model()
+
 
     def build_model(self):
 
@@ -104,10 +106,9 @@ class cyclegan(object):
         self.testA = self.generatorBToA.predict(self.test_B)
 
         t_vars = tf.trainable_variables()
-        self.d_vars = [var for var in t_vars if 'discriminator' in var.name]
-        self.g_vars = [var for var in t_vars if 'generator' in var.name]
-        for var in t_vars: print(var.name)
-
+        self.d_vars = [var for var in t_vars if 'discriminator' in str(var.name)]
+        self.g_vars = [var for var in t_vars if 'generator' in str(var.name)]
+        #for var in t_vars: print(var.name)
     def train(self):
 
         """Train cyclegan"""
