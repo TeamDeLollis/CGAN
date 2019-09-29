@@ -97,8 +97,10 @@ class Discriminator():
     def build_discriminator(self):
 
         input = tf.compat.v1.placeholder(tf.float32, shape=self.input_shape)
+        print(x)
         x = ZeroPadding2D(input, padding=[1, 1])
         # 1st Convolutional block
+        print(x)
         x = Conv2D(x, filters=64, kernel_size=4, strides=2, padding="VALID")
         x = LeakyReLU(x, alpha=0.2)
 
