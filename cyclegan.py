@@ -161,6 +161,20 @@ class cyclegan(object):
                     self.save(args.checkpoint_dir, counter)
                 """
 
+            if epoch % 10 == 0:
+                # Get a batch of test data
+                batchA, batchB = load_test_batch(data_dir=self.data_dir, batch_size=1)
+
+                generatedA, generatedB, reconsA, reconsB = self.sess.run([self.fake_A, self.fake_B, self.fake_A_, self.fake_B_],
+                                                               feed_dict={self.real_A: batchA,
+                                                                          self.real_B: batchB})
+
+                # Save original, generated and reconstructed images
+                for i in range(len(generatedA)):
+                    save_images(originalA=batchA[i], generatedB=generatedB[i], recosntructedA=reconsA[i],
+                                originalB=batchB[i], generatedA=generatedA[i], reconstructedB=reconsB[i],
+                                path="results/gen_{}_{}".format(epoch, i))
+
     def mse_criterion(self, x, target):
         return tf.reduce_mean((x-target)**2)
 
