@@ -35,5 +35,5 @@ def ZeroPadding2D(x, padding):
 
     # --> dovrebbe essere
     if padding == [1, 1]:
-        padd = tf.constant([[0, 0], [1, 1], [1, 1], [0, 0]])
+        padd = tf.constant([ [1, 1], [1, 1], [0, 0]])
         return tf.pad(x, padd, "CONSTANT")
