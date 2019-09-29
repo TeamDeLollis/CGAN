@@ -1,9 +1,11 @@
 import tensorflow as tf
 
+
 def Conv2D(input, filters, kernel_size, strides, padding):
-    #return tf.nn.conv2d(input, filter=filters, strides=strides, padding=padding, use_cudnn_on_gpu=True)
+    # return tf.nn.conv2d(input, filter=filters, strides=strides, padding=padding, use_cudnn_on_gpu=True)
+    # check that there is no relu !!
     return tf.layers.conv2d(inputs=input, filters=filters, kernel_size=kernel_size, strides=strides, padding=padding,
-                            activation_fn=None, use_cudnn_on_gpu=True)
+                            use_cudnn_on_gpu=True)
 
 
 def Conv2DTranspose(input, filters, kernel_size, strides, padding, use_bias):
@@ -36,5 +38,5 @@ def ZeroPadding2D(x, padding):
 
     # --> dovrebbe essere
     if padding == [1, 1]:
-        padd = tf.constant([ [1, 1], [1, 1], [0, 0]])
+        padd = tf.constant([[1, 1], [1, 1], [0, 0]])
         return tf.pad(x, padd, "CONSTANT")
