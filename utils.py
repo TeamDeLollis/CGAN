@@ -31,7 +31,7 @@ def load_images(data_dir):
 
         if index < min_l - 1:
             allImagesB.append(imgB)
-    
+
     # Normalize images
     allImagesA = np.array(allImagesA) / 127.5 - 1.
     allImagesB = np.array(allImagesB) / 127.5 - 1.

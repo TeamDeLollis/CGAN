@@ -2,8 +2,6 @@ import tensorflow as tf
 
 
 def Conv2D(input, filters, kernel_size, strides, padding):
-    # return tf.nn.conv2d(input, filter=filters, strides=strides, padding=padding, use_cudnn_on_gpu=True)
-    # check that there is no relu !! use_cudnn_on_gpu=True
     return tf.layers.conv2d(inputs=input, filters=filters, kernel_size=kernel_size, strides=strides, padding=padding,
                             activation=None)
 
@@ -11,25 +9,9 @@ def Conv2D(input, filters, kernel_size, strides, padding):
 def Conv2DTranspose(input, filters, kernel_size, strides, padding, use_bias):
     return tf.contrib.layers.conv2d_transpose(input, filters, kernel_size=kernel_size, stride=strides,
                                        padding=padding, activation_fn=None)
-    #tf.nn.conv2d_transpose(input, filters, strides, padding=padding)
-
-"""
-tf.nn.conv2d_transpose(
-    input,
-    filters,
-    output_shape,
-    strides,
-    padding='SAME',
-    data_format='NHWC',
-    dilations=None,
-    name=None
-)
-
-"""
 
 def BatchNormalization(input, axis, momentum, epsilon):
     return tf.layers.batch_normalization(input, axis=axis, momentum=momentum, epsilon=epsilon)
-
 
 def Add(a, b):
     return tf.compat.v1.add(a, b)
@@ -38,53 +20,15 @@ def Add(a, b):
 def LeakyReLU(x, alpha):
     return tf.compat.v1.nn.leaky_relu(x, alpha=alpha)
 
-
 def InstanceNormalization(x):
-    # x = InstanceNormalization(axis=1)(x)
-    # tf.contrib.layers.instance_norm(x)
-    #with tf.variable_scope("instance_norm", reuse=False):
-    depth = x.get_shape()[3]
-    #scale = _weights("scale", [depth], mean=1.0)
-    #offset = _biases("offset", [depth])
     mean, variance = tf.nn.moments(x, axes=[1, 2], keep_dims=True)
     epsilon = 1e-5
     inv = tf.rsqrt(variance + epsilon)
     normalized = (x - mean) * inv
-    #return scale * normalized + offset
     return normalized
 
 
 def ZeroPadding2D(x, padding):
-    # paddings = tf.constant([[1, 1, ], [2, 2]]) #CHECK DIMENSION BEFORE ENTERING, SHOULD BE (NB=1,3,npix,npix)
-    # 'constant_values' is 0.
-    # rank of 't' is 2.
-    # tf.pad(t, paddings, "CONSTANT")
-
-    # --> dovrebbe essere
     if padding == [1, 1]:
         padd = tf.constant([[0, 0], [1, 1], [1, 1], [0, 0]])
         return tf.pad(x, padd, "CONSTANT")
-
-
-def _weights(name, shape, mean=0.0, stddev=0.02):
-    """ Helper to create an initialized Variable
-  Args:
-    name: name of the variable
-    shape: list of ints
-    mean: mean of a Gaussian
-    stddev: standard deviation of a Gaussian
-  Returns:
-    A trainable variable
-  """
-    var = tf.get_variable(
-        name, shape,
-        initializer=tf.random_normal_initializer(
-            mean=mean, stddev=stddev, dtype=tf.float32))
-    return var
-
-
-def _biases(name, shape, constant=0.0):
-    """ Helper to create an initialized Bias with constant
-  """
-    return tf.get_variable(name, shape,
-                           initializer=tf.constant_initializer(constant))

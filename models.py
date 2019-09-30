@@ -9,21 +9,8 @@ class Generator():
         self.residual_blocks = 6
         self.sess = sess
 
-        # with tf.variable_scope('generator', reuse=tf.AUTO_REUSE):
-        # self.input, self.output = self.build_generator()
-        # self.network_params = tf.trainable_variables()
-
-    """
-    Create a generator network using the hyperparameter values defined below
-    """
-
     def predict(self, input):
-        # placeholder and then feed dictionary
-
-        # input = tf.compat.v1.placeholder(tf.float32, shape=self.input_shape)
-
         with tf.variable_scope('generator', reuse=tf.AUTO_REUSE):
-
             # First Convolution block
             x = Conv2D(input, filters=32, kernel_size=7, strides=1, padding="same")
             x = InstanceNormalization(x)
@@ -46,9 +33,6 @@ class Generator():
             # Upsampling blocks
 
             # 1st Upsampling block
-            # print(x)
-            # in_ch = x._shape_as_list()[3]
-            # filter = [3, 3, in_ch, 64] # filters=64, kernel_size=(3, 3)
             x = Conv2DTranspose(x, filters=64, kernel_size=[3, 3], strides=2, padding='SAME', use_bias=False)
             # print(x)
 
@@ -80,13 +64,6 @@ class Generator():
 
         return Add(res, x)
 
-    """
-    def predict(self, inputs):
-        return self.sess.run([self.output], feed_dict={
-            self.input: inputs,
-        })
-    """
-
 
 class Discriminator():
     """
@@ -107,8 +84,8 @@ class Discriminator():
 
         with tf.variable_scope('discriminator', reuse=tf.AUTO_REUSE):
 
-
             x = ZeroPadding2D(input, padding=[1, 1])
+
             # 1st Convolutional block
             x = Conv2D(x, filters=64, kernel_size=4, strides=2, padding="VALID")
             x = LeakyReLU(x, alpha=0.2)
@@ -128,10 +105,3 @@ class Discriminator():
             output = tf.nn.sigmoid(pre_output)
 
         return output
-
-    """
-    def predict(self, inputs):
-        return self.sess.run([self.output], feed_dict={
-            self.input: inputs,
-        })
-    """

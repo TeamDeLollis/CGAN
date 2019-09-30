@@ -2,16 +2,18 @@ from models import *
 import tensorflow as tf
 import time
 import numpy as np
-np.random.seed(25)
 from utils import *
 
-class cyclegan(object):
+np.random.seed(25)
+
+
+class Cyclegan(object):
 
     def __init__(self, sess):
 
         self.sess = sess
         self.batch_size = 1
-        self.image_size = 128 #reduced in utils
+        self.image_size = 128  # reduced in utils
 
         self.L1_lambda = 10
         # self.data_dir = "datasets/vangogh2photo/" for the reduced dataset
@@ -33,12 +35,11 @@ class cyclegan(object):
 
         self.build_model()
 
-
     def build_model(self):
 
         self.real_A = tf.placeholder(tf.float32,
-                                        [None, self.image_size, self.image_size, 3],
-                                        name='real_A')
+                                     [None, self.image_size, self.image_size, 3],
+                                     name='real_A')
         self.real_B = tf.placeholder(tf.float32,
                                      [None, self.image_size, self.image_size, 3],
                                      name='real_B')
@@ -52,15 +53,15 @@ class cyclegan(object):
         self.DB_fake = self.discriminatorB.predict(self.fake_B)
 
         self.g_loss_a2b = self.mse_criterion(self.DB_fake, tf.ones_like(self.DB_fake)) \
-            + self.L1_lambda * self.abs_criterion(self.real_A, self.fake_A_) \
-            + self.L1_lambda * self.abs_criterion(self.real_B, self.fake_B_)
+                          + self.L1_lambda * self.abs_criterion(self.real_A, self.fake_A_) \
+                          + self.L1_lambda * self.abs_criterion(self.real_B, self.fake_B_)
         self.g_loss_b2a = self.mse_criterion(self.DA_fake, tf.ones_like(self.DA_fake)) \
-            + self.L1_lambda * self.abs_criterion(self.real_A, self.fake_A_) \
-            + self.L1_lambda * self.abs_criterion(self.real_B, self.fake_B_)
+                          + self.L1_lambda * self.abs_criterion(self.real_A, self.fake_A_) \
+                          + self.L1_lambda * self.abs_criterion(self.real_B, self.fake_B_)
         self.g_loss = self.mse_criterion(self.DA_fake, tf.ones_like(self.DA_fake)) \
-            + self.mse_criterion(self.DB_fake, tf.ones_like(self.DB_fake)) \
-            + self.L1_lambda * self.abs_criterion(self.real_A, self.fake_A_) \
-            + self.L1_lambda * self.abs_criterion(self.real_B, self.fake_B_)
+                      + self.mse_criterion(self.DB_fake, tf.ones_like(self.DB_fake)) \
+                      + self.L1_lambda * self.abs_criterion(self.real_A, self.fake_A_) \
+                      + self.L1_lambda * self.abs_criterion(self.real_B, self.fake_B_)
 
         self.fake_A_sample = tf.placeholder(tf.float32,
                                             [None, self.image_size, self.image_size, 3], name='fake_A_sample')
@@ -80,8 +81,6 @@ class cyclegan(object):
         self.da_loss = (self.da_loss_real + self.da_loss_fake) / 2
         self.d_loss = self.da_loss + self.db_loss
 
-
-        
         self.g_loss_a2b_sum = tf.summary.scalar("g_loss_a2b", self.g_loss_a2b)
         self.g_loss_b2a_sum = tf.summary.scalar("g_loss_b2a", self.g_loss_b2a)
         self.g_loss_sum = tf.summary.scalar("g_loss", self.g_loss)
@@ -109,7 +108,8 @@ class cyclegan(object):
         t_vars = tf.trainable_variables()
         self.d_vars = [var for var in t_vars if 'discriminator' in str(var.name)]
         self.g_vars = [var for var in t_vars if 'generator' in str(var.name)]
-        #for var in t_vars: print(var.name)
+        # for var in t_vars: print(var.name)
+
     def train(self):
 
         """Train cyclegan"""
@@ -131,44 +131,32 @@ class cyclegan(object):
             batch_idxs = min(len(dataA), len(dataB)) // self.batch_size
 
             for idx in range(0, batch_idxs):
-
                 batchA = dataA[idx * self.batch_size:(idx + 1) * self.batch_size]
                 batchB = dataB[idx * self.batch_size:(idx + 1) * self.batch_size]
-                #batch_images = np.array(batch_images).astype(np.float32)
+                # batch_images = np.array(batch_images).astype(np.float32)
 
                 # Update G network and record fake outputs
                 fake_A, fake_B, _, summary_str = self.sess.run([self.fake_A, self.fake_B, self.g_optim, self.g_sum],
                                                                feed_dict={self.real_A: batchA,
                                                                           self.real_B: batchB})
-                #print(fake_A)
-                #self.writer.add_summary(summary_str, counter)[fake_A, fake_B] = self.pool([fake_A, fake_B])
-                #self.writer.add_summary(summary_str, counter)[fake_A, fake_B] = [fake_A, fake_B]
 
                 # Update D network
-                _, summary_str = self.sess.run([self.d_optim, self.d_sum],feed_dict={self.real_A: batchA,
-                                                                                     self.real_B: batchB,
-                                                                                     self.fake_A_sample: fake_A,
-                                                                                     self.fake_B_sample: fake_B})
+                _, summary_str = self.sess.run([self.d_optim, self.d_sum], feed_dict={self.real_A: batchA,
+                                                                                      self.real_B: batchB,
+                                                                                      self.fake_A_sample: fake_A,
+                                                                                      self.fake_B_sample: fake_B})
                 self.writer.add_summary(summary_str, counter)
 
                 counter += 1
-                print(("Epoch: [%2d] [%4d/%4d] time: %4.4f" % (epoch, idx, batch_idxs, time.time() - start_time)))
-
-                """
-                if np.mod(counter, args.print_freq) == 1:
-                    self.sample_model(args.sample_dir, epoch, idx)
-
-                if np.mod(counter, args.save_freq) == 2:
-                    self.save(args.checkpoint_dir, counter)
-                """
 
             if epoch % 10 == 0:
                 # Get a batch of test data
                 batchA, batchB = load_test_batch(data_dir=self.data_dir, batch_size=1)
 
-                generatedA, generatedB, reconsA, reconsB = self.sess.run([self.fake_A, self.fake_B, self.fake_A_, self.fake_B_],
-                                                               feed_dict={self.real_A: batchA,
-                                                                          self.real_B: batchB})
+                generatedA, generatedB, reconsA, reconsB = self.sess.run(
+                    [self.fake_A, self.fake_B, self.fake_A_, self.fake_B_],
+                    feed_dict={self.real_A: batchA,
+                               self.real_B: batchB})
 
                 # Save original, generated and reconstructed images
                 for i in range(len(generatedA)):
@@ -177,7 +165,7 @@ class cyclegan(object):
                                 path="results/gen_{}_{}".format(epoch, i))
 
     def mse_criterion(self, x, target):
-        return tf.reduce_mean((x-target)**2)
+        return tf.reduce_mean((x - target) ** 2)
 
     def abs_criterion(self, x, target):
         return tf.reduce_mean(tf.abs(x - target))
