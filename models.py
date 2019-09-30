@@ -2,7 +2,7 @@ import tensorflow as tf
 from ops import *
 
 
-class Generator():
+class Generator(object):
 
     def __init__(self, sess):
         self.input_shape = (1, 128, 128, 3)
@@ -65,7 +65,7 @@ class Generator():
         return Add(res, x)
 
 
-class Discriminator():
+class Discriminator(object):
     """
     Create a discriminator network using the hyperparameter values defined below
     """
@@ -75,12 +75,7 @@ class Discriminator():
         self.hidden_layers = 3
         self.sess = sess
 
-        # with tf.variable_scope('discriminator', reuse=tf.AUTO_REUSE):
-        # self.input, self.output = self.build_discriminator()
-        # self.network_params = tf.trainable_variables()
-
     def predict(self, input):
-        # input = tf.compat.v1.placeholder(tf.float32, shape=self.input_shape)
 
         with tf.variable_scope('discriminator', reuse=tf.AUTO_REUSE):
 

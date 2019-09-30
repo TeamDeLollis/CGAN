@@ -15,6 +15,8 @@ def load_images(data_dir):
     allImagesB = []
 
     for index, filename in enumerate(imagesA):
+        if index > 300:
+            break
         imgA = imread(filename, mode='RGB')
         if index < min_l - 1:
             imgB = imread(imagesB[index], mode='RGB')

@@ -32,6 +32,18 @@ class Cyclegan(object):
         self.g_loss = None
         self.d_vars = None
         self.g_vars = None
+        self.real_A = None
+        self.real_B = None
+        self.fake_A = None
+        self.fake_A_ = None
+        self.fake_B = None
+        self.fake_B_ = None
+        self.fake_A_sample = None
+        self.fake_B_sample = None
+        self.test_A = None
+        self.test_B = None
+        self.testB = None
+        self.testA = None
 
         self.build_model()
 
@@ -49,17 +61,17 @@ class Cyclegan(object):
         self.fake_A_ = self.generatorBToA.predict(self.fake_B)
         self.fake_B_ = self.generatorAToB.predict(self.fake_A)
 
-        self.DA_fake = self.discriminatorA.predict(self.fake_A)
-        self.DB_fake = self.discriminatorB.predict(self.fake_B)
+        DA_fake = self.discriminatorA.predict(self.fake_A)
+        DB_fake = self.discriminatorB.predict(self.fake_B)
 
-        self.g_loss_a2b = self.mse_criterion(self.DB_fake, tf.ones_like(self.DB_fake)) \
-                          + self.L1_lambda * self.abs_criterion(self.real_A, self.fake_A_) \
-                          + self.L1_lambda * self.abs_criterion(self.real_B, self.fake_B_)
-        self.g_loss_b2a = self.mse_criterion(self.DA_fake, tf.ones_like(self.DA_fake)) \
-                          + self.L1_lambda * self.abs_criterion(self.real_A, self.fake_A_) \
-                          + self.L1_lambda * self.abs_criterion(self.real_B, self.fake_B_)
-        self.g_loss = self.mse_criterion(self.DA_fake, tf.ones_like(self.DA_fake)) \
-                      + self.mse_criterion(self.DB_fake, tf.ones_like(self.DB_fake)) \
+        g_loss_a2b = self.mse_criterion(DB_fake, tf.ones_like(DB_fake)) \
+                     + self.L1_lambda * self.abs_criterion(self.real_A, self.fake_A_) \
+                     + self.L1_lambda * self.abs_criterion(self.real_B, self.fake_B_)
+        g_loss_b2a = self.mse_criterion(DA_fake, tf.ones_like(DA_fake)) \
+                     + self.L1_lambda * self.abs_criterion(self.real_A, self.fake_A_) \
+                     + self.L1_lambda * self.abs_criterion(self.real_B, self.fake_B_)
+        self.g_loss = self.mse_criterion(DA_fake, tf.ones_like(DA_fake)) \
+                      + self.mse_criterion(DB_fake, tf.ones_like(DB_fake)) \
                       + self.L1_lambda * self.abs_criterion(self.real_A, self.fake_A_) \
                       + self.L1_lambda * self.abs_criterion(self.real_B, self.fake_B_)
 
@@ -68,35 +80,37 @@ class Cyclegan(object):
         self.fake_B_sample = tf.placeholder(tf.float32,
                                             [None, self.image_size, self.image_size, 3], name='fake_B_sample')
 
-        self.DB_real = self.discriminatorB.predict(self.real_B)
-        self.DA_real = self.discriminatorA.predict(self.real_A)
-        self.DB_fake_sample = self.discriminatorB.predict(self.fake_B_sample)
-        self.DA_fake_sample = self.discriminatorA.predict(self.fake_A_sample)
+        DB_real = self.discriminatorB.predict(self.real_B)
+        DA_real = self.discriminatorA.predict(self.real_A)
+        DB_fake_sample = self.discriminatorB.predict(self.fake_B_sample)
+        DA_fake_sample = self.discriminatorA.predict(self.fake_A_sample)
 
-        self.db_loss_real = self.mse_criterion(self.DB_real, tf.ones_like(self.DB_real))
-        self.db_loss_fake = self.mse_criterion(self.DB_fake_sample, tf.zeros_like(self.DB_fake_sample))
-        self.db_loss = (self.db_loss_real + self.db_loss_fake) / 2
-        self.da_loss_real = self.mse_criterion(self.DA_real, tf.ones_like(self.DA_real))
-        self.da_loss_fake = self.mse_criterion(self.DA_fake_sample, tf.zeros_like(self.DA_fake_sample))
-        self.da_loss = (self.da_loss_real + self.da_loss_fake) / 2
-        self.d_loss = self.da_loss + self.db_loss
+        db_loss_real = self.mse_criterion(DB_real, tf.ones_like(DB_real))
+        db_loss_fake = self.mse_criterion(DB_fake_sample, tf.zeros_like(DB_fake_sample))
+        db_loss = (db_loss_real + db_loss_fake) / 2
+        da_loss_real = self.mse_criterion(DA_real, tf.ones_like(DA_real))
+        da_loss_fake = self.mse_criterion(DA_fake_sample, tf.zeros_like(DA_fake_sample))
+        da_loss = (da_loss_real + da_loss_fake) / 2
+        self.d_loss = da_loss + db_loss
 
-        self.g_loss_a2b_sum = tf.summary.scalar("g_loss_a2b", self.g_loss_a2b)
-        self.g_loss_b2a_sum = tf.summary.scalar("g_loss_b2a", self.g_loss_b2a)
+        """
+        self.g_loss_a2b_sum = tf.summary.scalar("g_loss_a2b", g_loss_a2b)
+        self.g_loss_b2a_sum = tf.summary.scalar("g_loss_b2a", g_loss_b2a)
         self.g_loss_sum = tf.summary.scalar("g_loss", self.g_loss)
-        self.g_sum = tf.summary.merge([self.g_loss_a2b_sum, self.g_loss_b2a_sum, self.g_loss_sum])
-        self.db_loss_sum = tf.summary.scalar("db_loss", self.db_loss)
-        self.da_loss_sum = tf.summary.scalar("da_loss", self.da_loss)
+        self.g_sum = tf.summary.merge([g_loss_a2b_sum, self.g_loss_b2a_sum, self.g_loss_sum])
+        self.db_loss_sum = tf.summary.scalar("db_loss", db_loss)
+        self.da_loss_sum = tf.summary.scalar("da_loss", da_loss)
         self.d_loss_sum = tf.summary.scalar("d_loss", self.d_loss)
-        self.db_loss_real_sum = tf.summary.scalar("db_loss_real", self.db_loss_real)
-        self.db_loss_fake_sum = tf.summary.scalar("db_loss_fake", self.db_loss_fake)
-        self.da_loss_real_sum = tf.summary.scalar("da_loss_real", self.da_loss_real)
-        self.da_loss_fake_sum = tf.summary.scalar("da_loss_fake", self.da_loss_fake)
+        self.db_loss_real_sum = tf.summary.scalar("db_loss_real", db_loss_real)
+        self.db_loss_fake_sum = tf.summary.scalar("db_loss_fake", db_loss_fake)
+        self.da_loss_real_sum = tf.summary.scalar("da_loss_real", da_loss_real)
+        self.da_loss_fake_sum = tf.summary.scalar("da_loss_fake", da_loss_fake)
         self.d_sum = tf.summary.merge(
             [self.da_loss_sum, self.da_loss_real_sum, self.da_loss_fake_sum,
              self.db_loss_sum, self.db_loss_real_sum, self.db_loss_fake_sum,
              self.d_loss_sum]
         )
+        """
 
         self.test_A = tf.placeholder(tf.float32,
                                      [None, self.image_size, self.image_size, 3], name='test_A')
@@ -118,7 +132,7 @@ class Cyclegan(object):
 
         init_op = tf.global_variables_initializer()
         self.sess.run(init_op)
-        self.writer = tf.summary.FileWriter("./logs", self.sess.graph)
+        # self.writer = tf.summary.FileWriter("./logs", self.sess.graph)
 
         counter = 1
         epochs = 500
@@ -136,16 +150,16 @@ class Cyclegan(object):
                 # batch_images = np.array(batch_images).astype(np.float32)
 
                 # Update G network and record fake outputs
-                fake_A, fake_B, _, summary_str = self.sess.run([self.fake_A, self.fake_B, self.g_optim, self.g_sum],
-                                                               feed_dict={self.real_A: batchA,
-                                                                          self.real_B: batchB})
+                fake_A, fake_B, _ = self.sess.run([self.fake_A, self.fake_B, self.g_optim],
+                                                  feed_dict={self.real_A: batchA,
+                                                             self.real_B: batchB})
 
                 # Update D network
-                _, summary_str = self.sess.run([self.d_optim, self.d_sum], feed_dict={self.real_A: batchA,
-                                                                                      self.real_B: batchB,
-                                                                                      self.fake_A_sample: fake_A,
-                                                                                      self.fake_B_sample: fake_B})
-                self.writer.add_summary(summary_str, counter)
+                _ = self.sess.run([self.d_optim], feed_dict={self.real_A: batchA,
+                                                             self.real_B: batchB,
+                                                             self.fake_A_sample: fake_A,
+                                                             self.fake_B_sample: fake_B})
+                # self.writer.add_summary(summary_str, counter)
 
                 counter += 1
 
@@ -164,8 +178,10 @@ class Cyclegan(object):
                                 originalB=batchB[i], generatedA=generatedA[i], reconstructedB=reconsB[i],
                                 path="results/gen_{}_{}".format(epoch, i))
 
-    def mse_criterion(self, x, target):
+    @staticmethod
+    def mse_criterion(x, target):
         return tf.reduce_mean((x - target) ** 2)
 
-    def abs_criterion(self, x, target):
+    @staticmethod
+    def abs_criterion(x, target):
         return tf.reduce_mean(tf.abs(x - target))
