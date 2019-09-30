@@ -137,9 +137,9 @@ class Cyclegan(object):
         counter = 1
         epochs = 500
         start_time = time.time()
-
+        dataA, dataB = load_images(self.data_dir)
         for epoch in range(epochs):
-            dataA, dataB = load_images(self.data_dir)
+            print("epoch", epoch)
             np.random.shuffle(dataA)
             np.random.shuffle(dataB)
             batch_idxs = min(len(dataA), len(dataB)) // self.batch_size
